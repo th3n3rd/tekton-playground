@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: spring-app-ci
+spec:
+  workspaces:
+    - name: pipeline
+  tasks:
+    - name: checkout-source
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: https://github.com/th3n3rd/tekton-playground.git
+      workspaces:
+        - name: output
+          workspace: pipeline
+    - name: test
+      taskRef:
+        name: gradlew
+      params:
+        - name: sub-dir
+          value: ./spring-app
+        - name: args
+          value:
+            - test
+      workspaces:
+        - name: source
+          workspace: pipeline
+      runAfter:
+        - checkout-source
+    # - name: build
+    #   taskRef:
+    #     name: buildpacks
+    #   workspaces:
+    #     - name: source
+    #       workspace: pipeline
+    #   params:
+    #     - name: APP_IMAGE
+    #       value: th3n3rd/tekton-spring-app
+    #     - name: BUILDER_IMAGE
+    #       value: paketobuildpacks/builder:base
+    #     - name: SOURCE_SUBPATH
+    #       value: spring-app
+    #   runAfter:
+    #     - checkout-source

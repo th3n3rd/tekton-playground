@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: spring-app-ci-run-
+spec:
+  serviceAccountName: tekton
+  pipelineRef:
+    name: spring-app-ci
+  workspaces:
+  - name: pipeline
+    volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi

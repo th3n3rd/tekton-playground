@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gradlew
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: sub-dir
+      type: string
+      default: "."
+    - name: args
+      type: array
+      default:
+        - "tasks"
+  steps:
+    - name: gradlew
+      image: bellsoft/liberica-openjdk-alpine:11
+      workingDir: $(workspaces.source.path)
+      args:
+        - $(params.args)
+      script: |
+        cd "$(params.sub-dir)"
+        ./gradlew -Dorg.grale.daemon=false "$@"
